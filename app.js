@@ -71,6 +71,8 @@ function mostrarApp() {
   $("#u-nombre").textContent = perfil.nombre || perfil.email;
   $("#u-rol").textContent = perfil.rol === "admin" ? "Administrador" : "Usuario";
   $("#u-avatar").textContent = (perfil.nombre || perfil.email || "?").charAt(0).toUpperCase();
+  // ✅ CORRECCIÓN: Oculta el botón de cambiar contraseña si NO es admin
+  $("#btn-clave").hidden = perfil.rol !== "admin";
   $("#tab-admin").hidden = perfil.rol !== "admin";
   activarTab("gen");
   if (perfil.rol === "admin") cargarUsuarios();

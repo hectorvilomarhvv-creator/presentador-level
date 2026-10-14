@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PLANI PRESENTACION LEVEL</title>
+  <link rel="icon" href="logo.png">
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/pptxgenjs@4.0.1/dist/pptxgen.bundle.js"></script>
+</head>
+<body>
+
+<!-- ============ LOGIN ============ -->
+<section id="vista-login" class="login" hidden>
+  <div class="login-caja">
+    <h1 class="login-titulo">PLANI PRESENTACION LEVEL</h1>
+    <p class="login-tag">Generador de presentaciones educativas</p>
+
+    <form id="form-login" class="tarjeta tarjeta-login" autocomplete="on">
+      <div class="insignia"><img src="logo.png" alt="PLANI"></div>
+      <p class="login-sub">Inicia sesión para continuar</p>
+      <label>Correo electrónico
+        <input id="login-email" type="email" required autocomplete="username" placeholder="tucorreo@ejemplo.com">
+      </label>
+      <label>Contraseña
+        <input id="login-pass" type="password" required autocomplete="current-password">
+      </label>
+      <button class="btn btn-ancho" type="submit">Ingresar</button>
+      <p id="login-msg" class="msg" role="alert"></p>
+      <p id="aviso-config" class="msg msg-error" hidden>
+        Falta configurar Firebase. Abre <b>public/firebase-config.js</b> y pega los datos de tu proyecto (ver GUIA.md).
+      </p>
+    </form>
+  </div>
+</section>
+
+<!-- ============ APLICACIÓN ============ -->
+<section id="vista-app" hidden>
+  <header class="banner">
+    <img src="logo.png" alt="PLANI">
+    <div class="banner-texto">
+      <div class="t">PLANI PRESENTACION LEVEL</div>
+      <div class="s">Generador de presentaciones educativas con información real</div>
+    </div>
+    <div class="usuario">
+      <div class="avatar" id="u-avatar">A</div>
+      <div class="usuario-datos"><b id="u-nombre"></b><span id="u-rol"></span></div>
+      <button class="btn btn-claro" id="btn-clave" type="button" title="Cambiar mi contraseña">🔑</button>
+      <button class="btn btn-claro" id="btn-salir" type="button">Salir</button>
+    </div>
+  </header>
+
+  <main class="contenedor">
+    <nav class="tabs" id="tabs">
+      <button class="tab activa" data-tab="gen" type="button">🎓 Generar presentación</button>
+      <button class="tab" data-tab="admin" id="tab-admin" type="button" hidden>👥 Administrar usuarios</button>
+    </nav>
+
+    <!-- Generador -->
+    <section id="panel-gen">
+      <div class="hero"><b>🎓 Crea tu presentación</b>
+        <p>Escribe un tema y la app reunirá información verificable de varias fuentes, con imágenes relacionadas y una diapositiva de referencias.</p>
+      </div>
+      <form id="form-gen" class="tarjeta">
+        <label>Tema, asignatura o concepto
+          <input id="tema" type="text" required maxlength="120" value="La fotosíntesis">
+        </label>
+        <div class="fila">
+          <label>Diapositivas de contenido: <b id="num-val">6</b>
+            <input id="num" type="range" min="3" max="10" value="6">
+          </label>
+          <label class="check"><input id="yt" type="checkbox" checked> Incluir enlaces de YouTube</label>
+        </div>
+        <button class="btn" id="btn-gen" type="submit">🚀 Generar presentación</button>
+        <p id="estado" class="msg" role="status"></p>
+      </form>
+      <div id="resultado" class="tarjeta" hidden>
+        <h3>Presentación lista</h3>
+        <p class="muted">Se descargó el archivo .pptx. Contenido:</p>
+        <ol id="lista-slides"></ol>
+        <button class="btn" id="btn-re" type="button">📥 Descargar de nuevo</button>
+      </div>
+    </section>
+
+    <!-- Administración -->
+    <section id="panel-admin" hidden>
+      <div id="stats" class="stats"></div>
+
+      <form id="form-alta" class="tarjeta">
+        <h3>➕ Crear usuario</h3>
+        <div class="fila">
+          <label>Nombre completo <input id="a-nombre" type="text" required maxlength="80"></label>
+          <label>Correo electrónico <input id="a-email" type="email" required></label>
+        </div>
+        <div class="fila">
+          <label>Contraseña inicial (mín. 6) <input id="a-clave" type="password" required minlength="6" autocomplete="new-password"></label>
+          <label>Rol
+            <select id="a-rol"><option value="usuario">Usuario</option><option value="admin">Administrador</option></select>
+          </label>
+        </div>
+        <div class="fila">
+          <label>Acceso válido hasta <input id="a-vence" type="date"></label>
+          <label class="check"><input id="a-sinvence" type="checkbox"> Sin fecha de vencimiento</label>
+        </div>
+        <button class="btn" type="submit">Crear usuario</button>
+        <p id="msg-alta" class="msg" role="status"></p>
+      </form>
+
+      <div class="tarjeta">
+        <h3>👥 Usuarios</h3>
+        <p id="msg-admin" class="msg" role="status"></p>
+        <div class="tabla-caja">
+          <table class="tabla">
+            <thead><tr><th>Usuario</th><th>Rol</th><th>Estado</th><th>Vence</th><th></th></tr></thead>
+            <tbody id="tabla-usuarios"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </main>
+</section>
+
+<!-- Editar usuario -->
+<dialog id="dlg-edit">
+  <form id="form-edit" class="dialogo">
+    <h3>Editar usuario</h3>
+    <p class="muted" id="e-email"></p>
+    <label>Nombre <input id="e-nombre" type="text" required maxlength="80"></label>
+    <label>Rol
+      <select id="e-rol"><option value="usuario">Usuario</option><option value="admin">Administrador</option></select>
+    </label>
+    <label class="check"><input id="e-activo" type="checkbox"> Cuenta activa</label>
+    <label>Acceso válido hasta <input id="e-vence" type="date"></label>
+    <label class="check"><input id="e-sinvence" type="checkbox"> Sin fecha de vencimiento</label>
+    <p id="e-msg" class="msg msg-error"></p>
+    <div class="botones"><button class="btn btn-gris" type="button" id="e-cancelar">Cancelar</button><button class="btn" type="submit">Guardar</button></div>
+  </form>
+</dialog>
+
+<!-- Cambiar mi contraseña -->
+<dialog id="dlg-clave">
+  <form id="form-clave" class="dialogo">
+    <h3>Cambiar mi contraseña</h3>
+    <label>Contraseña actual <input id="c-actual" type="password" required autocomplete="current-password"></label>
+    <label>Nueva contraseña (mín. 6) <input id="c-nueva" type="password" required minlength="6" autocomplete="new-password"></label>
+    <p id="c-msg" class="msg"></p>
+    <div class="botones"><button class="btn btn-gris" type="button" id="c-cancelar">Cancelar</button><button class="btn" type="submit">Actualizar</button></div>
+  </form>
+</dialog>
+
+<script type="module" src="app.js"></script>
+</body>
+</html>
